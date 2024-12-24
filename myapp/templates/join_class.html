@@ -1,0 +1,17 @@
+{% extends "common.html" %}
+{% block content %}
+  <h2>Join {{ course_class.course_name }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="passkey">Enter Passkey:</label>
+    <input type="text" name="passkey" id="passkey" required>
+    <button type="submit">Join Class</button>
+  </form>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

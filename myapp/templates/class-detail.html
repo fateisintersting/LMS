@@ -1,0 +1,94 @@
+{% extends 'common.html' %}
+{% load static tailwind_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <title>{{ course_class.course_name }} - Class Detail</title>
+    {% tailwind_css %}
+
+    <div class="container mx-auto p-6 bg-gray-100">
+        <h1 class="text-3xl font-bold text-center">{{ course_class.course_name }}</h1>
+        <p class="text-center text-gray-600">Passkey: {{ course_class.passkey }}</p>
+
+        <!-- Upload Content Form (Dropdown) -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-semibold cursor-pointer" onclick="toggleDropdown('uploadForm')">
+                Upload New Content <span class="text-gray-500">&#9662;</span>
+            </h2>
+            <div id="uploadForm" class="hidden mt-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="title" class="block text-gray-700">Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="description" class="block text-gray-700">Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="file" class="block text-gray-700">Upload File</label>
+                        {{ form.file }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="video_link" class="block text-gray-700">Video Link</label>
+                        {{ form.video_link }}
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Upload Content
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- View Members Who Joined the Class -->
+        <div class="text-center mt-4">
+            <a href="{% url 'class_members' course_class.unique_id %}"
+               class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" aria-label="View members of {{ course_class.course_name }}">
+                View Members
+            </a>
+        </div>
+
+        <!-- Display Uploaded Content (Main Dropdown) -->
+        <div class="mt-10">
+            <h2 class="text-2xl font-semibold cursor-pointer" onclick="toggleDropdown('contentSection')">
+                Class Content <span class="text-gray-500">&#9662;</span> <!-- Arrow for main dropdown -->
+            </h2>
+            <div id="contentSection" class="hidden mt-4">
+                <div class="grid gap-6 lg:grid-cols-2 sm:grid-cols-1">
+                    {% for content in contents %}
+                    <div class="bg-white shadow-lg rounded-lg p-4">
+                        <h3 class="text-xl font-bold cursor-pointer" onclick="toggleDropdown('content-{{ forloop.counter0 }}')">
+                            {{ content.title }}
+                            <span class="text-gray-500">&#9662;</span> <!-- Arrow for each content item -->
+                        </h3>
+                        <div id="content-{{ forloop.counter0 }}" class="hidden mt-2">
+                            <p class="text-gray-600 mb-2">{{ content.description }}</p>
+                            {% if content.file %}
+                            <p class="text-blue-500">
+                                <a href="{{ content.file.url }}" target="_blank" aria-label="Download {{ content.title }}">Download File</a>
+                            </p>
+                            {% endif %}
+                            {% if content.video_link %}
+                            <p class="text-blue-500">
+                                <a href="{{ content.video_link }}" target="_blank" aria-label="Watch video for {{ content.title }}">Watch Video</a>
+                            </p>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm">Uploaded on {{ content.created_at|date:"Y-m-d H:i" }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-gray-500">No content uploaded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(elementId) {
+            const element = document.getElementById(elementId);
+            element.classList.toggle('hidden');
+        }
+    </script>
+{% endblock %}

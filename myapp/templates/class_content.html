@@ -1,0 +1,83 @@
+{% extends "common.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 px-4">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">{{ course_class.course_name }} - Content</h2>
+  <ul class="space-y-4">
+    {% for content in contents %}
+      <li class="bg-white shadow-md rounded-lg border border-gray-200">
+        <div class="p-4 flex justify-between items-center cursor-pointer" 
+             onclick="toggleContent({{ forloop.counter0 }}, {{ content.id }})">
+          <p class="text-lg font-semibold text-gray-700">{{ content.title }}</p>
+          <span class="text-gray-500">&#9662;</span>
+        </div>
+        <div id="content-{{ forloop.counter0 }}" class="hidden p-4 border-t border-gray-200">
+          <p class="text-sm text-gray-600 mb-4">{{ content.description }}</p>
+          <div class="flex space-x-4">
+            {% if content.file %}
+              <a href="{{ content.file.url }}" 
+                 class="text-white bg-green-600 hover:bg-green-700 font-medium py-2 px-4 rounded-md shadow transition duration-150">
+                Download File
+              </a>
+            {% endif %}
+
+            {% if content.video_link %}
+              <div class="mt-4">
+                <iframe src="{{ content.video_link }}" 
+                        class="w-full h-64 rounded-lg shadow-md"
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Mark as Read Button -->
+          <div class="mt-4">
+            <button id="mark-read-{{ content.id }}" onclick="markAsRead({{ content.id }})"
+                    class="bg-blue-600 text-white font-medium py-2 px-4 rounded-md shadow hover:bg-blue-700 transition duration-150">
+              Mark as Read
+            </button>
+            <div id="loader-{{ content.id }}" class="hidden">
+              <svg class="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  function toggleContent(index, contentId) {
+    const contentDiv = document.getElementById(`content-${index}`);
+    contentDiv.classList.toggle("hidden");
+
+    if (!contentDiv.classList.contains("hidden")) {
+      fetch(`/start-content/${contentId}/`, { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+        .then(response => response.json())
+        .then(data => console.log(data.status));
+    }
+  }
+
+  function markAsRead(contentId) {
+    const button = document.getElementById(`mark-read-${contentId}`);
+    const loader = document.getElementById(`loader-${contentId}`);
+    button.classList.add("hidden");
+    loader.classList.remove("hidden");
+
+    fetch(`/mark-as-read/${contentId}/`, { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'marked_as_read') {
+          button.textContent = "Already Read";
+          button.disabled = true;
+        }
+        loader.classList.add("hidden");
+        button.classList.remove("hidden");
+      });
+  }
+</script>
+{% endblock %}

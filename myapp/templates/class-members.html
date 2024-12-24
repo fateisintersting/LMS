@@ -1,0 +1,30 @@
+{% extends 'common.html' %}
+
+{% block content %}
+<div class="container mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800">{{ course_class.course_name }} - Members</h2>
+
+    <div class="mt-6">
+        <ul class="list-disc pl-6">
+            {% for join in joined_users %}
+                <li class="flex items-center justify-between py-2 px-4 bg-white rounded-lg shadow hover:bg-green-400 transition duration-200 mb-2">
+                    <span class="text-gray-700 text-lg">{{ join.user.username }}</span>
+                    <!-- Pass the user.id to the 'member_progress' URL -->
+                    <a href="{% url 'member_progress' studentid=join.user.id %}" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600">
+                        Progress
+                    </a>
+                </li>
+            {% empty %}
+                <p class="text-center text-gray-500">No users have joined this class yet.</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="text-center mt-6">
+        <a href="{% url 'class_detail' course_class.unique_id %}"
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-200">
+            Back to Class Details
+        </a>
+    </div>
+</div>
+{% endblock %}

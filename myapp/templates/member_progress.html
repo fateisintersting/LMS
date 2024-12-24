@@ -1,0 +1,16 @@
+{% extends "common.html" %}
+
+{% block content %}
+<div class="container mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+  <!-- Display Chart Image -->
+  <div class="mt-8">
+    <h3 class="text-2xl font-semibold text-gray-700">Time Spent on Each Content</h3>
+    <div class="mt-4 flex justify-center">
+      <div class="chart-container">
+        <!-- Insert the generated chart as base64 -->
+        <img src="data:image/png;base64,{{ chart_image }}" alt="Time Spent Chart" class="rounded-lg shadow-md">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
