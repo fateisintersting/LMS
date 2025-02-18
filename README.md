@@ -96,3 +96,29 @@ To set up and run the project locally:
    ```bash
    python manage.py runserver
    ```
+## 🤝 Contributing
+
+### Clone the repo
+
+```bash
+git clone the repo
+cd lms
+```
+
+### Build the project
+
+```bash
+pip install reqiment.txt
+```
+
+### Run the project
+
+```bash
+python django 
+```
+
+
+```
+### Submit a pull request
+
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
